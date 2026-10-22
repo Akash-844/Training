@@ -1,3 +1,4 @@
+//here we created interface of borrowRecord and exported too
 export interface BorrowRecord {
   id: number;
   bookId: number;
