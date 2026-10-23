@@ -2,6 +2,7 @@ import type { BorrowRecord } from "../models/borrow-record";
 
 class BorrowRepo {
   private borrowRecords: BorrowRecord[] = [];
+
   addRecord(record: BorrowRecord): void {
     this.borrowRecords.push(record);
   }

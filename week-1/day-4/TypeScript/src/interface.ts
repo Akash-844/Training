@@ -15,7 +15,7 @@ const employee1: Employee = {
   name: "Akash",
   employeeId: 101,
   department: "IT"
-  //sakary=20000 error becasue the propetie havent decalared in employee interface
+  //salary=20000 error becasue the propetie havent decalared in employee interface
 };
 console.log(employee1.name);
 

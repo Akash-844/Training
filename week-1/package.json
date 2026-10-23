@@ -1,5 +1,5 @@
 {
-  "name": "typescript",
+  "name": "week-1",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,6 +11,8 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }

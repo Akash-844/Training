@@ -1,8 +1,12 @@
 import BookRepo = require("./repositories/book-repo");
 import BorrowRepo = require("./repositories/borrow-repo");
+import BorrowService = require("./services/borrow-service");
 
 const bookRepo = new BookRepo();
-//here we created dummy books data
+const borrowRepo = new BorrowRepo();
+
+const borrowService = new BorrowService(bookRepo, borrowRepo);
+//here we created sample books data
 const books = [
   {
     id: 1,
@@ -22,12 +26,18 @@ const books = [
   }
 ];
 
+//Add Books
 books.forEach((book) => {
   bookRepo.addBook(book);
 });
-console.log("All Books:", bookRepo.getAllBooks());
+
+//here we get error because there no book id called 3
 console.log(bookRepo.getBookById(3));
 
+//Here It Will Show Books data
+console.log("All Books:", bookRepo.getAllBooks());
+
+//Update Books
 const updateBook = {
   id: 2,
   title: "JavaScript-Book",
@@ -41,55 +51,34 @@ console.log(bookRepo.getAllBooks());
 
 // const Delete = bookRepo.deleteBook(2);
 
-// if (Delete) {
-//   console.log("Book Deleted");
+//if (Delete) {
+//  console.log("Book Deleted");
 // } else {
 //   console.log("Book Not FOund!");
 // }
 
-// console.log(bookRepo.getAllBooks());
+// onsole.log(bookRepo.getAllBooks());
 
-// const result = bookRepo.deleteBook(100);
-// console.log(result);
+//onst result = bookRepo.deleteBook(100);
+//console.log(result);
 
-const borrowRepo = new BorrowRepo();
+//borrowing Book
+const first = borrowService.borrowBook(1, 101);
+console.log("Borrow 1st time:", first.message, first.success);
 
-function bookBorrow(bookId: number, userId: number): boolean {
-  const book = bookRepo.getBookById(bookId);
+const secound = borrowService.borrowBook(2, 101);
+console.log("Borrow 2nd time:", secound.message, secound.success);
 
-  if (!book) {
-    console.log("Book Not Found");
-    return false;
-  }
+const third = borrowService.borrowBook(1, 101);
+console.log("Borrow 3rd time:", third.message, third.success);
 
-  if (book.availableCopies <= 0) {
-    console.log("No Copies Available");
-    return false;
-  }
+//return book
+const returned = borrowService.returnBook(1, 101);
+console.log("Return Book:", returned.message, returned.success);
 
-  book.availableCopies--;
+//user can borrow again
+const fourth = borrowService.borrowBook(1, 101);
+console.log("Borrow 4th time:", fourth.message, fourth.success);
 
-  const today = new Date();
-  const dueDate = new Date(today);
-  dueDate.setDate(dueDate.getDate() + 14);
-
-  const record = {
-    id: borrowRepo.getAllRecords().length + 1,
-    bookId: book.id,
-    userId: userId,
-    borrowedDate: today.toISOString().slice(0, 10),
-    dueDate: dueDate.toISOString().slice(0, 10),
-    returnedDate: null
-  };
-  borrowRepo.addRecord(record);
-
-  console.log("Book borrowed successfully");
-  return true;
-}
-
-console.log("Borrow attempt 1:", bookBorrow(1, 101));
-console.log("Borrow attempt 2:", bookBorrow(2, 102));
-console.log("Borrow missing book:", bookBorrow(100, 101));
-
-console.log("Updated books:", bookRepo.getAllBooks());
+console.log("Final Books", bookRepo.getAllBooks());
 console.log("Borrow history:", borrowRepo.getAllRecords());

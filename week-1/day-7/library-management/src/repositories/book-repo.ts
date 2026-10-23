@@ -1,7 +1,5 @@
-//Here we have imported the file from models folder inside we have book-record file that exported file we are using here
 import type { Book } from "../models/book-record";
 
-//here we created a class bookrepo
 class BookRepo {
   //Book[] means this array contains only book objects
   private booksList: Book[] = [];
@@ -22,7 +20,6 @@ class BookRepo {
   updateBook(id: number, updateBook: Book): boolean {
     const index = this.booksList.findIndex((book) => book.id === id);
 
-    //if the book id is not theee then return false
     if (index === -1) {
       return false;
     }
@@ -32,7 +29,6 @@ class BookRepo {
   //here we created deletebook method to delete book by bookId
   deleteBook(id: number): boolean {
     const index = this.booksList.findIndex((book) => book.id == id);
-    //if id not found return false
     if (index === -1) {
       return false;
     }
