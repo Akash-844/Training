@@ -4,6 +4,10 @@ import type { ProductPrice } from "../types/types.js";
 export function getNumericPrice(price: ProductPrice): number {
   return typeof price === "string" ? Number(price) : price;
 }
+const price = getNumericPrice(product.price);
+const finalPrice = price * 1.18;
+
+console.log(finalPrice);
 
 export function getDiscountedPrice(price: ProductPrice): number {
   const numericPrice = getNumericPrice(price);
