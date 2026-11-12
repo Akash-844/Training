@@ -1,5 +1,10 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import type { CreateTaskInput, Task, UpdateTaskInput } from "../types/task";
+import type {
+  CreateTaskInput,
+  ReplaceTaskInput,
+  Task,
+  UpdateTaskInput
+} from "../types/task";
 import { db } from "@/config/db";
 
 interface TaskRow extends RowDataPacket {
@@ -73,23 +78,111 @@ export const createTask = async (task: CreateTaskInput): Promise<Task> => {
 };
 
 //Used Patch Method
+// export const patchTask = async (
+//   id: number,
+//   updates: UpdateTaskInput
+// ): Promise<Task> => {
+//   const response = await fetch(
+//     `https://jsonplaceholder.typicode.com/todos/${id}`,
+//     {
+//       method: "PATCH",
+//       headers: {
+//         "Content-Type": "application/json"
+//       },
+//       body: JSON.stringify(updates)
+//     }
+//   );
+//   if (!response.ok) {
+//     throw new Error("Unable to update Content in Object");
+//   }
+//   const UpdateTaskInput: Task = await response.json();
+//   return UpdateTaskInput;
+// };
+
 export const patchTask = async (
   id: number,
   updates: UpdateTaskInput
 ): Promise<Task> => {
-  const response = await fetch(
-    `https://jsonplaceholder.typicode.com/todos/${id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(updates)
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Unable to update Content in Object");
+  const field: string[] = [];
+  const values: (string | number | boolean)[] = [];
+
+  if (updates.title !== undefined) {
+    field.push("title = ?");
+    values.push(updates.title);
   }
-  const UpdateTaskInput: Task = await response.json();
-  return UpdateTaskInput;
+  if (updates.completed !== undefined) {
+    field.push("completed = ?");
+    values.push(updates.completed);
+  }
+  if (updates.userId !== undefined) {
+    field.push("user_id = ?");
+    values.push(updates.userId);
+  }
+  if (field.length === 0) {
+    throw new Error("No fields Provided for update");
+  }
+
+  values.push(id);
+
+  const sql = `UPDATE tasks SET ${field.join(", ")} WHERE id = ?`;
+
+  const [results] = await db.execute<ResultSetHeader>(sql, values);
+
+  const [rows] = await db.query<TaskRow[]>(
+    "SELECT id,user_id AS userId,title,completed FROM tasks WHERE id = ?",
+    [id]
+  );
+  if (rows.length === 0) {
+    throw new Error("Task Not Found");
+  }
+
+  const updateTask: Task = {
+    id: rows[0].id,
+    userId: rows[0].userId,
+    title: rows[0].title,
+    completed: Boolean(rows[0].completed)
+  };
+
+  return updateTask;
+};
+
+//PUT
+export const putTask = async (
+  id: number,
+  updates: ReplaceTaskInput
+): Promise<Task> => {
+  const sql = `
+    UPDATE tasks
+    SET user_id = ?, title = ?, completed = ?
+    WHERE id = ?
+  `;
+  const [result] = await db.execute<ResultSetHeader>(sql, [
+    updates.userId,
+    updates.title,
+    updates.completed,
+    id
+  ]);
+
+  const [rows] = await db.query<TaskRow[]>(
+    "SELECT id,user_id AS userId,title,completed FROM tasks WHERE id = ?",
+    [id]
+  );
+  if (rows.length === 0) {
+    throw new Error("Task Not Found");
+  }
+  const updateTask: Task = {
+    id: rows[0].id,
+    userId: rows[0].userId,
+    title: rows[0].title,
+    completed: Boolean(rows[0].completed)
+  };
+  return updateTask;
+};
+
+//delete
+export const deleteTask = async (id: number): Promise<boolean> => {
+  const sql = "DELETE FROM tasks WHERE id = ?";
+  const [result] = await db.execute<ResultSetHeader>(sql, [id]);
+
+  return result.affectedRows > 0;
 };

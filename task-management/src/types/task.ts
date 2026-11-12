@@ -7,3 +7,4 @@ export interface Task {
 
 export type CreateTaskInput = Omit<Task, "id">;
 export type UpdateTaskInput = Partial<Omit<Task, "id">>;
+export type ReplaceTaskInput = Omit<Task, "id">;
