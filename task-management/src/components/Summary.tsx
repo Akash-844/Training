@@ -13,6 +13,38 @@ const Summary = () => {
   const handleTaskCreated = (newTask: Task) => {
     setTasks((previousTasks) => [...previousTasks, newTask]);
   };
+  const handelEditTask = async (taskId: number, title: string) => {
+    const existingTask = tasks.find((task) => task.id == taskId);
+
+    if (!existingTask) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId: existingTask.userId,
+          title: title,
+          completed: existingTask.completed
+        })
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update task");
+      }
+      const updatedTask: Task = await response.json();
+
+      setTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === updatedTask.id ? updatedTask : task
+        )
+      );
+    } catch (error) {
+      console.log("Error editing task:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -117,6 +149,7 @@ const Summary = () => {
             task={task}
             onToggle={handleToggleTask}
             onDelete={handleDeleteTask}
+            onEdit={handelEditTask}
           />
         ))}
       </section>
