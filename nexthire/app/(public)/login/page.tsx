@@ -1,5 +1,5 @@
-const page = () => {
-  return <div>NextHire Login Page</div>;
-};
+import LoginForm from "./login-form";
 
-export default page;
+export default function LoginPage() {
+  return <LoginForm />;
+}

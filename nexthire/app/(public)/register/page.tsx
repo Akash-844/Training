@@ -1,5 +1,5 @@
-const register = () => {
-  return <div>register</div>;
-};
+import RegisterForm from "./register-form";
 
-export default register;
+export default function Registerpage() {
+  return <RegisterForm />;
+}
