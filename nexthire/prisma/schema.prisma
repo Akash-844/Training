@@ -26,5 +26,18 @@ model User{
   emailVerified DateTime?
   image String?
   createdAt DateTime @default(now())
+  jobs Job[]
 }
 
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String
+  description String?  @db.Text
+
+  recruiterId String
+  recruiter   User     @relation(fields: [recruiterId], references: [id])
+
+  createdAt   DateTime @default(now())
+}

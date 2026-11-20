@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
+import { Suspense } from "react";
+import AuthProvider from "@/components/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,15 +21,19 @@ export const metadata: Metadata = {
     "Discover jobs and connect with the right employers using NextHire."
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <Suspense fallback={<header className="h-20 w-full bg-[#163B32]" />}>
+            <Navbar />
+          </Suspense>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
+import prisma from "@/lib/prisma";
 
 export async function loginUser(
   prevState: string | undefined,
@@ -12,11 +13,18 @@ export async function loginUser(
     .toLowerCase();
   const password = String(formData.get("password") || "");
 
+  const user = await prisma.user.findUnique({ where: { email } });
+  const redirectTo =
+    user?.role === "RECRUITER" ? "/recruiter/dashboard" : "/dashboard";
+  console.log("LOGIN REDIRECT:", {
+    role: user?.role,
+    redirectTo
+  });
   try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/"
+      redirectTo
     });
   } catch (error) {
     if (error instanceof AuthError) {

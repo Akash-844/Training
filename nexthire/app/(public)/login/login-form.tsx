@@ -1,15 +1,78 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
-import { loginUser } from "./actions";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, type FormEvent } from "react";
 
 export default function LoginForm() {
-  const [error, formAction, pending] = useActionState(loginUser, undefined);
+  const router = useRouter();
+  const { update } = useSession();
+
+  const [error, setError] = useState<string | undefined>();
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("reason") === "session-expired") {
+      setSessionExpired(true);
+
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError(undefined);
+    setPending(true);
+
+    const formData = new FormData(event.currentTarget);
+
+    const email = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
+
+    const password = String(formData.get("password") || "");
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false
+      });
+
+      if (!result || result.error) {
+        setError("Invalid email or password");
+        return;
+      }
+
+      const session = await update();
+
+      if (!session?.user) {
+        setError("Unable to load session. Please try again.");
+        return;
+      }
+
+      const destination =
+        session.user.role === "RECRUITER"
+          ? "/recruiter/dashboard"
+          : "/dashboard";
+
+      router.replace(destination);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <main className="flex min-h-[calc(100vh-130px)] items-center justify-center bg-[#F7F9FB] px-4 py-14">
-      <section className="w-full max-w-[500px] rounded-[20px] border border-[#DCE4EC] bg-white px-6 py-10 shadow-sm sm:px-10">
+      <section className="w-full max-w-125 rounded-[20px] border border-[#DCE4EC] bg-white px-6 py-10 shadow-sm sm:px-10">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-[#12213A]">NextHire</h1>
 
@@ -22,7 +85,13 @@ export default function LoginForm() {
           </p>
         </div>
 
-        <form action={formAction} className="mt-10 space-y-6">
+        {sessionExpired && (
+          <p className="mt-6 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
+            Your session has expired. Please log in again to continue.
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
           <div>
             <label
               htmlFor="email"
@@ -80,7 +149,7 @@ export default function LoginForm() {
         </form>
 
         <p className="mt-7 text-center text-base text-[#63748B]">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="font-semibold text-[#E47759] hover:text-[#D9684B]"
