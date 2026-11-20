@@ -1,3 +1,11 @@
+import HeroSection from "@/components/home/hero-section";
+import Jobs from "@/components/home/jobs-section";
+
 export default function Home() {
-  return <h1>Welcome To NextHire</h1>;
+  return (
+    <main>
+      <HeroSection />
+      <Jobs />
+    </main>
+  );
 }

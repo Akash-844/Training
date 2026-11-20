@@ -1,0 +1,9 @@
+/*
+  Warnings:
+
+  - Added the required column `passwordHash` to the `User` table without a default value. This is not possible if the table is not empty.
+
+*/
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `passwordHash` VARCHAR(191) NOT NULL,
+    ADD COLUMN `role` ENUM('JOB_SEEKER', 'RECRUITER') NOT NULL DEFAULT 'JOB_SEEKER';
