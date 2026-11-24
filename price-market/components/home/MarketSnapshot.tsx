@@ -35,7 +35,7 @@ const metals = [
 
 export default function MarketSnapshot() {
   return (
-    <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-12 sm:px-6 lg:px-8 ">
       <div className="mx-auto max-w-7xl">
         {/* Heading */}
         <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">

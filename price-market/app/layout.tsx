@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/elements/Navbar";
+import Footer from "@/components/elements/Footer";
 
 export const metadata: Metadata = {
   title: "PriceMarket | Gold, Silver & Metal Prices",
@@ -13,10 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import Icon from "../../public/icon.svg";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -18,18 +20,21 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-600 text-xl font-bold text-white shadow-md">
-            M
-          </div>
+          <Image
+            src={Icon}
+            alt="PriceMarket Logo"
+            width={40}
+            height={40}
+            priority
+            className="h-10 w-10 object-contain"
+          />
 
-          <div>
-            <span className="text-xl font-extrabold tracking-tight text-gray-900">
-              Price<span className="text-yellow-700">Market</span>
-            </span>
-          </div>
+          <span className="text-xl font-extrabold tracking-tight text-gray-900">
+            Price<span className="text-yellow-700">Market</span>
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Navigation */}
         <div className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => (
             <Link
