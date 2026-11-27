@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/elements/Navbar";
-import Footer from "@/components/elements/Footer";
+import SessionManager from "@/components/auth/SessionManager";
+import SiteLayout from "@/components/layout/SiteLayout";
 
 export const metadata: Metadata = {
   title: "PriceMarket | Gold, Silver & Metal Prices",
@@ -14,11 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try { document.documentElement.classList.toggle("dark", localStorage.getItem("theme") === "dark"); } catch {}` }} />
+      </head>
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <SessionManager />
+        <SiteLayout>{children}</SiteLayout>
       </body>
     </html>
   );

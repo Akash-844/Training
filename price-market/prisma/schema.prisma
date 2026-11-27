@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(191)
+  phone        String   @unique @db.VarChar(20)
+  passwordHash String   @db.VarChar(255)
+  role         UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+}
+
+model Session {
+  id               Int      @id @default(autoincrement())
+  accessTokenHash  String   @unique @db.VarChar(64)
+  refreshTokenHash String   @unique @db.VarChar(64)
+  userId           Int
+  lastActivityAt   DateTime @default(now())
+  accessExpiresAt  DateTime
+  refreshExpiresAt DateTime
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshExpiresAt])
+}
+
+model Metal {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
+  symbol    String   @unique @db.VarChar(10)
+  slug      String   @unique @db.VarChar(50)
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  prices MetalPrice[]
+}
+
+model MetalPrice {
+  id            Int      @id @default(autoincrement())
+  metalId       Int
+  price         Decimal  @db.Decimal(18, 4)
+  currency      String   @default("INR") @db.VarChar(3)
+  unit          String   @db.VarChar(20)
+  source        String   @db.VarChar(30)
+  benchmark     String   @db.VarChar(80)
+  benchmarkDate DateTime @db.Date
+  fetchedAt     DateTime @default(now())
+
+  metal Metal @relation(fields: [metalId], references: [id], onDelete: Restrict)
+
+  @@unique([metalId, source, benchmark, unit, benchmarkDate])
+  @@index([metalId, benchmarkDate])
+}
