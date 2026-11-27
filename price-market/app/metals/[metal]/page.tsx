@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import MetalHistory from "@/components/metals/MetalHistory";
 
 const metalDetails: Record<string, { name: string; description: string }> = {
   gold: {
@@ -19,6 +21,10 @@ const metalDetails: Record<string, { name: string; description: string }> = {
   }
 };
 
+type Props = {
+  params: Promise<{ metal: string }>;
+};
+
 export function generateStaticParams() {
   return [
     { metal: "gold" },
@@ -27,10 +33,9 @@ export function generateStaticParams() {
     { metal: "copper" }
   ];
 }
-type Props = {
-  params: Promise<{ metal: string }>;
-};
-export default async function MetalPage({ params }: Props) {
+
+// This component accesses the dynamic route parameter
+async function MetalPageContent({ params }: Props) {
   const { metal } = await params;
 
   const details = metalDetails[metal];
@@ -40,9 +45,27 @@ export default async function MetalPage({ params }: Props) {
   }
 
   return (
-    <main>
-      <h1>{details.name}</h1>
-      <p>{details.description}</p>
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <h1 className="text-3xl font-bold">{details.name}</h1>
+
+      <p className="mt-2 text-gray-600 dark:text-gray-300">{details.description}</p>
+
+      <MetalHistory key={metal} slug={metal} />
     </main>
+  );
+}
+
+// Main page
+export default function MetalPage({ params }: Props) {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto max-w-6xl px-6 py-10">
+          <p>Loading metal page...</p>
+        </main>
+      }
+    >
+      <MetalPageContent params={params} />
+    </Suspense>
   );
 }

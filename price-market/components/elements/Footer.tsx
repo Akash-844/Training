@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import Icon from "../../public/icon.svg";
 
 const footerLinks = [
   { name: "About", href: "/about" },
@@ -11,7 +10,7 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-(--foreground) text-white">
+    <footer className="w-full bg-gray-900 dark:bg-gray-950 text-white">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 md:py-10 lg:px-8">
         <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
           <Link
@@ -20,7 +19,7 @@ const Footer = () => {
             aria-label="PriceMarket Home"
           >
             <Image
-              src={Icon}
+              src="/icon.svg"
               alt="PriceMarket Logo"
               width={40}
               height={40}
